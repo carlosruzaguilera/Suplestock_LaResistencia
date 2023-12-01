@@ -154,3 +154,35 @@ void agregarProductosDesdeCSV() {
     fclose(file);
     printf("\nProductos agregados desde CSV correctamente.\n");
 }
+
+void agregarProductoDetalle(int id, char *nombre, float precio_compra, float precio_venta, int cantidad_stock) {
+    Producto producto;
+    producto.id = id;
+    strncpy(producto.nombre, nombre, sizeof(producto.nombre) - 1); // Asegurar que no exceda el límite de tamaño
+    producto.precio_compra = precio_compra;
+    producto.precio_venta = precio_venta;
+    producto.cantidad_stock = cantidad_stock;
+
+    int indice = calcularHash(producto.id);
+
+    Producto *nuevoProducto = (Producto *)malloc(sizeof(Producto));
+    if (nuevoProducto == NULL) {
+        printf("\nError al asignar memoria para nuevo producto.\n");
+        return;
+    }
+
+    *nuevoProducto = producto;
+    nuevoProducto->siguiente = NULL;
+
+    if (tablaHash[indice] == NULL) {
+        tablaHash[indice] = nuevoProducto;
+    } else {
+        Producto *actual = tablaHash[indice];
+        while (actual->siguiente != NULL) {
+            actual = actual->siguiente;
+        }
+        actual->siguiente = nuevoProducto;
+    }
+
+    printf("\nProducto '%s' agregado correctamente.\n", nombre);
+}
