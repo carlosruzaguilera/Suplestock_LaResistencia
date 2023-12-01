@@ -68,3 +68,89 @@ void eliminarProducto() {
 
     printf("\nProducto con ID %d no encontrado.\n", id);
 }
+
+void eliminarProductoPorNombre() {
+    char nombreBuscado[50];
+    printf("\nIngrese el nombre del producto a eliminar: ");
+    scanf("%s", nombreBuscado);
+
+    int encontrado = 0;
+
+    for (int i = 0; i < TAM_TABLA; ++i) {
+        Producto *actual = tablaHash[i];
+        Producto *anterior = NULL;
+
+        while (actual != NULL) {
+            if (strcmp(actual->nombre, nombreBuscado) == 0) {
+                encontrado = 1;
+                if (anterior == NULL) {
+                    // Eliminar el primer producto en la lista
+                    tablaHash[i] = actual->siguiente;
+                } else {
+                    // Eliminar un producto que no es el primero
+                    anterior->siguiente = actual->siguiente;
+                }
+                free(actual);
+                printf("\nProducto con nombre '%s' eliminado.\n", nombreBuscado);
+                break; // Salir del bucle si se encuentra y elimina el producto
+            }
+            anterior = actual;
+            actual = actual->siguiente;
+        }
+
+        if (encontrado) {
+            break; // Salir del bucle principal si se ha eliminado el producto
+        }
+    }
+
+    if (!encontrado) {
+        printf("\nProducto con nombre '%s' no encontrado.\n", nombreBuscado);
+    }
+}
+
+void agregarProductosDesdeCSV() {
+    char filename[100];
+    printf("\nIngrese el nombre del archivo CSV: ");
+    scanf("%99s", filename); // Limita la entrada
+    while (getchar() != '\n'); // Limpia el buffer
+
+    FILE *file = fopen(filename, "r");
+    if (!file) {
+        printf("\nNo se pudo abrir el archivo %s\n", filename);
+        return;
+    }
+
+    char line[1024];
+
+    // Si tu CSV tiene una línea de encabezado, descomenta la siguiente línea
+    // fgets(line, sizeof(line), file);
+
+    while (fgets(line, sizeof(line), file)) {
+        char *token;
+        int id, cantidad_stock;
+        char nombre[50];
+        float precio_compra, precio_venta;
+
+        // Tokenización y conversión de datos
+        token = strtok(line, ",");
+        if (token) id = atoi(token);
+
+        token = strtok(NULL, ",");
+        if (token) strcpy(nombre, token);
+
+        token = strtok(NULL, ",");
+        if (token) precio_compra = atof(token);
+
+        token = strtok(NULL, ",");
+        if (token) precio_venta = atof(token);
+
+        token = strtok(NULL, ",");
+        if (token) cantidad_stock = atoi(token);
+
+        // Agregar producto al sistema
+        agregarProductoDetalle(id, nombre, precio_compra, precio_venta, cantidad_stock);
+    }
+
+    fclose(file);
+    printf("\nProductos agregados desde CSV correctamente.\n");
+}
