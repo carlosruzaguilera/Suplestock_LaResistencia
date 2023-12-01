@@ -41,7 +41,7 @@ void agregarProductosDesdeCSV();
 void agregarProductoDetalle(int id, char *nombre, float precio_compra, float precio_venta, int cantidad_stock);
 void mostrarListaCompletaProductos();
 
-// Funciones de Gestión de Stock
+//funciones de gestion de stock
 void consultarStock(); 
 void actualizarStock(); 
 void anadirCantidadStock();
